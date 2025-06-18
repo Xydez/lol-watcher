@@ -2,8 +2,8 @@ import requests
 import os
 from dotenv import load_dotenv
 
-import time
-import datetime
+#import time
+#import datetime
 
 import json
 
@@ -152,12 +152,12 @@ def main():
 		if len(latestMatchIds) == 0:
 			continue
 
-		if (streak := getStreak(matchIds, puuid, True, 1)) > getStreak(matchIds, puuid, True) and streak > 2:
+		if (streak := getStreak(matchIds, puuid, True, 1)) > getStreak(matchIds, puuid, True) and streak >= 3:
 			sendMessage(f"{gameName}#{tagLine} just ended a {streak}x win streak by losing")
-		elif (streak := getStreak(matchIds, puuid, True)) > 0:
+		elif (streak := getStreak(matchIds, puuid, True)) >= 2:
 			print("xd")
 			sendMessage(f"{gameName}#{tagLine} has a {streak}x win streak")
-		elif (streak := getStreak(matchIds, puuid, False)) > 0:
+		elif (streak := getStreak(matchIds, puuid, False)) >= 2:
 			print("xde2")
 			sendMessage(f"{gameName}#{tagLine} has a {streak}x losing streak")
 
