@@ -1,0 +1,4 @@
+.mypy_cache
+.env
+cache.json
+sample.json
