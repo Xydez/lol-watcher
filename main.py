@@ -68,10 +68,10 @@ def fetchMatchIds(puuid):
 
 def getLatestMatchIds(puuid, matchIds):
 	data = loadCache()
-	#print(f"data={data}")
 
-	if puuid in data:
-		latestMatchIds = [m for m in matchIds if m not in data[MATCHES_BY_PUUID][puuid]]
+	if puuid in data[MATCHES_BY_PUUID]:
+		cachedMatches = data[MATCHES_BY_PUUID][puuid]
+		latestMatchIds = [m for m in matchIds if m not in cachedMatches]
 	else:
 		latestMatchIds = matchIds
 
@@ -127,11 +127,14 @@ def getStreak(matchIds, puuid, shouldWin, idx=0):
 	return streak
 
 def sendMessage(message):
-	requests.post(
+	r = requests.post(
 		os.getenv("WEBHOOK_URL"),
 		headers={ "Content-Type": "application/json" },
-		data={ "content": message }
+		data=json.dumps({ "content": message })
 	)
+
+	#print(r.json())
+	#print(r.request.body)
 
 def main():
 	for [gameName, tagLine] in map(lambda s: s.split("-"), os.getenv("WATCHED_USERS").split(",")):
@@ -146,11 +149,16 @@ def main():
 
 		print(f"  latestMatchIds={latestMatchIds}")
 
+		if len(latestMatchIds) == 0:
+			continue
+
 		if (streak := getStreak(matchIds, puuid, True, 1)) > getStreak(matchIds, puuid, True) and streak > 2:
 			sendMessage(f"{gameName}#{tagLine} just ended a {streak}x win streak by losing")
-		elif (streak := getStreak(matchIds, puuid, True)) > 1:
+		elif (streak := getStreak(matchIds, puuid, True)) > 0:
+			print("xd")
 			sendMessage(f"{gameName}#{tagLine} has a {streak}x win streak")
-		elif (streak := getStreak(matchIds, puuid, False)) > 1:
+		elif (streak := getStreak(matchIds, puuid, False)) > 0:
+			print("xde2")
 			sendMessage(f"{gameName}#{tagLine} has a {streak}x losing streak")
 
 		#for matchId in matchIds:
